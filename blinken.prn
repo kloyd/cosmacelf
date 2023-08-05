@@ -1,0 +1,69 @@
+                        ;
+                        ; Register Definitions:
+                        ;
+                  R0		EQU	0
+                  R1		EQU	1
+                  R2		EQU	2
+                  R3		EQU	3
+                  R4		EQU	4
+                  R5		EQU	5
+                  R6		EQU	6
+                  R7		EQU	7
+                  R8		EQU	8
+                  R9		EQU	9
+                  R10		EQU	10
+                  R11		EQU	11
+                  R12		EQU	12
+                  R13		EQU	13
+                  R14		EQU	14
+                  R15		EQU	15
+                        
+                  	ORG 0200h
+                        
+   0200   7b            BEGIN	SEQ		; announce running
+   0201   3f 01         INKEY	BN4 INKEY
+   0203   7a            	REQ		; ack "IN" pushed.
+                        	
+   0204   f8 02 b5 f8   START 	LOAD R5, ARRAY	; pseudo code, gets low of AR, puts in LO of R5, get high of AR, put in HI of R5
+   0208   25 a5         
+                                ;LDI 08         ; don't count bytes anymore. count to output
+                                ;PLO R4
+   020a   f8 02 b7 f8           LOAD R7, TOGGLES   ; point R7 to switch input byte.
+   020e   24 a7         
+   0210   e7                    SEX R7		; Read toggles into M(R7) 
+   0211   6c                    INP 4
+   0212   e5            SETOUT  SEX R5		; X register points to data
+   0213   f0            	LDX		; D register has array element
+   0214   32 04         	BZ START	; If AR(R5) == 0, restart sequence.
+   0216   64                    OUT 4		; output M(X) -> LEDS, R5++
+   0217   e7                    SEX R7		; get delay each time from toggle switches.
+   0218   f0                    LDX        
+   0219   b3                    PHI R3       	; R3.H = toggles R3.L = 0
+   021a   23            WAIT    DEC R3		; R3--
+   021b   93                    GHI R3 		; check if zero
+   021c   3a 1a                 BNZ WAIT	; go around again 
+   021e   6c                    INP 4          	; read toggles each time. will become new delay next time around.
+   021f   32 23                 BZ  DONE        ; if toggles all off, exit program
+                        	; check last loaded value.
+                                ; DEC R4         ; count--
+                                ; GLO R4
+                        	; BNZ SETOUT
+   0221   30 12         	BR SETOUT       ; loop around to next array byte for output. 
+                            
+   0223   d1            DONE    SEP R1         ; R1 points to the monitor re-entry point.
+                        
+   0224   00            TOGGLES BYTE 00
+                        
+   0225   01 02 04 08   ARRAY	BYTE 01, 02, 04, 08, 10h, 20h, 40h, 80h, 00h
+   0229   10 20 40 80   
+   022d   00            
+                        
+                        
+                      END
+0225  ARRAY         0200  BEGIN         0223  DONE          0201  INKEY     
+0000  R0            0001  R1            000a  R10           000b  R11       
+000c  R12           000d  R13           000e  R14           000f  R15       
+0002  R2            0003  R3            0004  R4            0005  R5        
+0006  R6            0007  R7            0008  R8            0009  R9        
+0212  SETOUT        0204  START         0224  TOGGLES       021a  WAIT      
+

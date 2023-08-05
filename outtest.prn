@@ -1,0 +1,14 @@
+                        ; Test 1802 OUT instruction
+                  		ORG 8000h
+                        		
+   8000   64            START		OUT 4
+   8001   00            DATA1		BYTE 00
+   8002   3f 00         INPTEST		BN4 START
+                        		
+   8004   64            		OUT 4
+   8005   11            DATA2		BYTE 011h
+   8006   30 02         		BR INPTEST
+                        		
+                  		END
+8001  DATA1         8005  DATA2         8002  INPTEST       8000  START     
+

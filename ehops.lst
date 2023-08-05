@@ -1,0 +1,114 @@
+                  	ORG 08000H
+                  R0	EQU	0
+                  R1	EQU	1
+                  R2	EQU	2
+                  R3	EQU	3
+                  R4	EQU	4
+                  R5	EQU	5
+                  R6	EQU	6
+                  R7	EQU	7
+                  R8	EQU	8
+                  R9	EQU	9
+                  RA	EQU	0AH
+                  RB	EQU	0BH
+                  RC	EQU	0CH
+                  RD	EQU	0DH
+                  RE	EQU	0EH
+                  RF	EQU	0FH
+                        
+                        
+   8000   f8 80         	LDI HIGH(SCRATCH)
+   8002   b2            	PHI R2		;Make sure all scratch pads base from 80h
+   8003   f8 56         	LDI LOW(SCRATCH)
+   8005   a2            	PLO R2
+                        ; R5 -> BSUB
+   8006   f8 80         	LDI HIGH(BSUB)
+   8008   b5            	PHI R5
+   8009   f8 2f         	LDI LOW(BSUB)
+   800b   a5            	PLO R5
+                        ; R6 -> HSUB
+   800c   f8 80         	LDI HIGH(HSUB)
+   800e   b6            	PHI R6
+   800f   f8 3f         	LDI LOW(HSUB)
+   8011   a6            	PLO R6
+                        ; R3 -> START
+   8012   f8 80         	LDI HIGH(START)
+   8014   b3            	PHI R3
+   8015   f8 19         	LDI LOW(START)
+   8017   a3            	PLO R3
+                        ; original code - assuming 0000 base system ram address
+                        ;	LDI 0FFH
+                        ;	PLO R2
+                        ;	LDI 023H
+                        ;	PLO R5
+                        ;	LDI 033H
+                        ;	PLO R6
+                        ;	LDI 0DH
+                        ;	PLO R3
+                        ; end org code
+                        
+   8018   d3            	SEP R3
+   8019   d5            START	SEP R5
+   801a   a1            	PLO R1
+   801b   6c            	INP 4
+   801c   3a 20         	BNZ LBL14
+   801e   81            	GLO R1
+   801f   a3            	PLO R3
+   8020   f6            LBL14	SHR
+   8021   3b 28         	BNF LBL1C
+   8023   d5            LBL17	SEP R5
+   8024   e1            	SEX R1
+   8025   64            	OUT 4
+   8026   30 23         	BR LBL17
+   8028   d5            LBL1C	SEP R5
+   8029   e1            	SEX R1
+   802a   51            	STR R1
+   802b   64            	OUT 4
+   802c   30 28         	BR LBL1C
+   802e   d3            LBL22	SEP R3
+   802f   d6            BSUB	SEP R6
+   8030   fe            	SHL
+   8031   fe            	SHL
+   8032   fe            	SHL
+   8033   fe            	SHL
+   8034   a0            	PLO R0
+   8035   d6            	SEP R6
+   8036   80            	GLO R0
+   8037   f1            	OR
+   8038   52            	STR R2
+   8039   64            	OUT 4
+   803a   22            	DEC R2
+   803b   30 2e         	BR LBL22
+   803d   f0            LBL31	LDX
+   803e   d5            	SEP R5
+   803f   e2            HSUB	SEX R2
+   8040   fc 01         	ADI 01
+   8042   fa 0f         	ANI 0FH
+   8044   52            	STR R2
+   8045   62            	OUT 2
+   8046   22            	DEC R2
+   8047   3d 3f         	BN2 HSUB
+   8049   7b            	SEQ
+   804a   f8 09         	LDI 09
+   804c   b4            	PHI R4
+   804d   24            LBL41	DEC R4
+   804e   9f            	GHI RF
+   804f   3a 4d         	BNZ LBL41
+   8051   7a            	REQ
+   8052   35 52         EF4OFF	B2 EF4OFF
+   8054   30 3d         	BR LBL31
+                        	
+                        	
+                        
+                        
+                  SCRATCH	BLK 1
+                        
+                  	END
+802f  BSUB          8052  EF4OFF        803f  HSUB          8020  LBL14     
+8023  LBL17         8028  LBL1C         802e  LBL22         803d  LBL31     
+804d  LBL41         0000  R0            0001  R1            0002  R2        
+0003  R3            0004  R4            0005  R5            0006  R6        
+0007  R7            0008  R8            0009  R9            000a  RA        
+000b  RB            000c  RC            000d  RD            000e  RE        
+000f  RF            8056  SCRATCH       8019  START         
+
