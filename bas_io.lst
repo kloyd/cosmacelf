@@ -73,7 +73,10 @@
    0230   20 54 49 4c   
    0234   2e            
    0235   0d            		BYTE 0dh
-   0236   00            		BYTE 0
+   0236   0a            		BYTE 0Ah
+   0237   20 24         		TEXT " $"
+                        		
+   0239   00            		BYTE 0
                         
                         
                         ;; routine locations
