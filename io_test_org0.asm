@@ -20,7 +20,7 @@ R13	EQU	13
 R14	EQU	14
 R15	EQU	15
 
-	ORG 200H
+	ORG 8000H
 	; Setup for SCRT routines.
 	; Set R3 as program counter
 	LDI HIGH main
@@ -30,7 +30,7 @@ R15	EQU	15
 	SEP R3
 	; Main program entry.	
 	; Setup stack pointer R2 @7FBFh
-main	LDI 07FH
+main	LDI 0FFH
 	PHI R2
 	LDI 0BFH
 	PLO R2
@@ -59,10 +59,7 @@ main	LDI 07FH
 	; of the actual routine.
 	; ergo it will indirectly jump to 8526H
 	SEP R4
-	WORD 8526H
-	
-	; read a character...
-	
+	WORD 0526H
 	; Exit to Membership Card monitor.
 	SEP 1
 	
@@ -74,8 +71,8 @@ greeting	TEXT "Hello, I'm a TIL."
 	BYTE 0
 
 ;; routine locations
-CALL	EQU 8ADBH
-RETURN	EQU 8AEDH
+CALL	EQU 0ADBH
+RETURN	EQU 0AEDH
 
 	END
 	
