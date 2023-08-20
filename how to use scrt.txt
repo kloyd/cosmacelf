@@ -1,0 +1,107 @@
+Kelly,
+
+	Below is the printout of the R9680 jump used within the Monitor
+(R9680 along with address 9660 that contains the "Hello World" message.
+
+9660                 	ORG	9660H
+
+  9660                 USERSTART
+                       ;TEST TEXT FOR THE OUTSTR ROUTINE
+  9660   48 65 6c 6c   	DB	"Hello World"
+  9664   6f 20 57 6f   
+  9668   72 6c 64      
+  966b   00            	DB	00H
+                       	
+  9680                 	ORG	9680H
+  9680                 USERSTART1
+  9680   f8 96         	LDI	HIGH US1
+  9682   b3            	PHI	R3
+  9683   f8 87         	LDI	LOW US1
+  9685   a3            	PLO	R3
+  9686   d3            	SEP	R3	;R3 EQUALS USER PC
+  
+  9687   f8 7f         US1	LDI	USRRAM
+  9689   b2            	PHI	R2
+  968a   f8 bf         	LDI	0BFH
+  968c   a2            	PLO	R2	;R2=STACK ADDRESS AT FFBF
+  968d   e2            	SEX	R2	;X=2
+  
+  
+  968e   f8 8a         	LDI	HIGH CALL
+  9690   b4            	PHI	R4
+  9691   f8 db         	LDI	LOW CALL
+  9693   a4            	PLO	R4	;R4 POINTS TO CALL ROUTINE
+  9694   f8 8a         	LDI	HIGH RETURN
+  9696   b5            	PHI	R5
+  9697   f8 ed         	LDI	LOW RETURN
+  9699   a5            	PLO	R5	;R5 POINTS TO RETURN CALL
+
+                       ;JUST IN CASE RESTORE RE WITH ORIGINAL BAUD RATE VALUE
+                       ;MONITOR SAVES BAUD RATE AT XXCD AND XXCE
+
+                       ;SAVE R6
+  969a   96            	GHI	R6
+  969b   73            	STXD
+  969c   86            	GLO	R6
+  969d   73            	STXD
+                       ;LOAD RE WITH THE USERS ORGINAL BAUD RATE VALUE
+
+  969e   f8 7f         	LDI	USRRAM
+  96a0   b6            	PHI	R6
+  96a1   f8 cd         	LDI	0CDH
+  96a3   a6            	PLO	R6
+  96a4   06            	LDN	R6
+  96a5   be            	PHI	RE
+  96a6   16            	INC	R6
+  96a7   06            	LDN	R6
+  96a8   ae            	PLO	RE	;RE RESTORED ORIGINAL BAUD
+RATE
+
+                       ;RESTORE R6
+  96a9   12            	INC	R2
+  96aa   72            	LDXA
+  96ab   a6            	PLO	R6
+  96ac   02            	LDN	R2
+  96ad   b6            	PHI	R6
+                       ;R6 RESTORED
+                       	
+  96ae   c0 00 00      	LBR	RUNRAM	;JUMP TO USER PROGRAM
+  
+  
+  
+  
+  NOTE: In the 11 July 2023 update, this address contain a jump to address
+  8100hex which is where the updated OUTPUT routine is stored at
+  
+  
+  7FCA: LBR  0200
+  0200: LDI  02   D=02
+  0202: PHI  R7   R7=0227 
+  0203: LDI  1B   D=1B
+  0205: PLO  R7   R7=021B 
+  0206: LDI  02   D=02
+  0208: PHI  R3   R3=0297 
+  0209: LDI  19   D=19
+  020B: PLO  R3   R3=0219 
+  020C: LDI  85   D=85
+  020E: PHI  R4   R4=8518 
+  020F: LDI  26   D=26
+  0211: PLO  R4   R4=8526 
+  0212: LDI  02   D=02
+  0214: PHI  R5   R5=02ED 
+  0215: LDI  1A   D=1A
+  0217: PLO  R5   R5=021A 
+  0218: SEP  R3
+  0219: SEP  R4
+  8526: GHI  R7   D=02
+  8527: STXD      M(0219)=02
+  8528: GLO  R7   D=1B
+  8529: STXD      M(0218)=1B
+  852A: LDN  R7   D=48
+  852B: BZ   34
+  852D: PLO  RB   RB=0048 
+  852E: SEP  R4
+  852F: GLO  R1   D=5E
+  8530: IDL
+
+ 
