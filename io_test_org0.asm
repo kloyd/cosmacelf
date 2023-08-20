@@ -20,6 +20,12 @@ R13	EQU	13
 R14	EQU	14
 R15	EQU	15
 
+;; Stack
+UserStack EQU 0FFBFH
+;; SCRT routine locations
+CALL	EQU 0ADBH
+RETURN	EQU 0AEDH
+
 	ORG 8000H
 	; Setup for SCRT routines.
 	; Set R3 as program counter
@@ -30,9 +36,9 @@ R15	EQU	15
 	SEP R3
 	; Main program entry.	
 	; Setup stack pointer R2 @7FBFh
-main	LDI 0FFH
+main	LDI HIGH UserStack
 	PHI R2
-	LDI 0BFH
+	LDI LOW UserStack
 	PLO R2
 	SEX R2
 	; Setup 4 to CALL routine 8ADB
@@ -70,9 +76,6 @@ greeting	TEXT "Hello, I'm a TIL."
 	
 	BYTE 0
 
-;; routine locations
-CALL	EQU 0ADBH
-RETURN	EQU 0AEDH
 
 	END
 	

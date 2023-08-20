@@ -20,6 +20,12 @@
    000e                 R14	EQU	14
    000f                 R15	EQU	15
                         
+                        ;; Stack
+   ffbf                 UserStack EQU 0FFBFH
+                        ;; SCRT routine locations
+   0adb                 CALL	EQU 0ADBH
+   0aed                 RETURN	EQU 0AEDH
+                        
    8000                 	ORG 8000H
                         	; Setup for SCRT routines.
                         	; Set R3 as program counter
@@ -30,9 +36,9 @@
    8006   d3            	SEP R3
                         	; Main program entry.	
                         	; Setup stack pointer R2 @7FBFh
-   8007   f8 ff         main	LDI 0FFH
+   8007   f8 ff         main	LDI HIGH UserStack
    8009   b2            	PHI R2
-   800a   f8 bf         	LDI 0BFH
+   800a   f8 bf         	LDI LOW UserStack
    800c   a2            	PLO R2
    800d   e2            	SEX R2
                         	; Setup 4 to CALL routine 8ADB
@@ -74,14 +80,12 @@
                         	
    8039   00            	BYTE 0
                         
-                        ;; routine locations
-   0adb                 CALL	EQU 0ADBH
-   0aed                 RETURN	EQU 0AEDH
                         
    803a                 	END
 0adb  CALL          0000  R0            0001  R1            000a  R10       
 000b  R11           000c  R12           000d  R13           000e  R14       
 000f  R15           0002  R2            0003  R3            0004  R4        
 0005  R5            0006  R6            0007  R7            0008  R8        
-0009  R9            0aed  RETURN        8024  greeting      8007  main      
+0009  R9            0aed  RETURN        ffbf  UserStack     8024  greeting  
+8007  main          
 
