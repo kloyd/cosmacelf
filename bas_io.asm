@@ -67,8 +67,10 @@ ENTRY
 
 		SEP 1 ; exit to mon.
 	
-STR		TEXT "HELLO"
-		BYTE 0
+STR		TEXT "Hello, I'm a TIL."
+		BYTE 0dh, 0Ah
+		BYTE 00
+		
 
 
 ;; routine locations
