@@ -20,9 +20,10 @@ R13	EQU	13
 R14	EQU	14
 R15	EQU	15
 
-;; Stack
+;; Stack for ram High - top of ram, minus monitor scratch pad area.
 UserStack EQU 0FFBFH
-;; SCRT routine locations
+;; SCRT routine locations Standard ROM org'd at 0
+; 
 CALL	EQU 0ADBH
 RETURN	EQU 0AEDH
 
@@ -63,7 +64,7 @@ main	LDI HIGH UserStack
 	; R3 is the program counter. R3 will be incremented to the address
 	; of the data after the SEP R4 instruction and contains the address
 	; of the actual routine.
-	; ergo it will indirectly jump to 8526H
+	; ergo it will indirectly jump to 0526H
 	SEP R4
 	WORD 0526H
 	; Exit to Membership Card monitor.
