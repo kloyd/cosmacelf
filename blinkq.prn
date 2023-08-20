@@ -1,8 +1,0 @@
-                        ;   Blink Q line	
-                  	ORG 00H
-   0000   7b            	SEQ
-   0001   7a            	REQ
-   0002   30 00         	BR 00H	
-                        
-                  	END
-

@@ -1,0 +1,46 @@
+Kelly,
+
+	Once you understand the "just" of SCRT, it is very handy to use it.
+Basically it is as follows:
+R4 points to the "CALL" routine
+R5 points to the "RETURN" routine
+Your Program counter has to be R3
+The format most used is:
+SEP	R4	
+DW	XXXX
+
+The SEP R4 calls the "CALL" routine and transfers the program execution
+pointed to by the "DW" value with PC=R3
+Then to return to the calling program your subroutine just uses a SEP R5
+instruction to return. Once you get the idea
+Of using it, it is a piece of cake to understand.
+
+If you need any help, just let me know.
+
+The Monitor "INPUT" routine is at 8005hex in the ORG'ed 8000hex Monitor
+The inputted character is returned in RB.0
+
+The Monitor "OUTPUT" routine is at 821Dhex in the ORG'ed 8000hex Monitor
+The character to be outputted is stored in RB.0
+NOTE: In the 11 July 2023 update, this address contain a jump to address
+8100hex which is where the updated OUTPUT routine is stored at
+
+The "OUTSTR" routine is at 8526hex which outputs a string of characters
+until it is terminated by a 00hex value
+
+Using SCRT:
+To call the "INPUT" routine your source code should be
+SEP	R4
+DW	8005H
+
+To call the "OUTPUT" routine your source code should be
+SEP	R4
+DW	821DH
+
+To call the "OUTSTR" routine your source code should be
+SEP	R4
+DW	8526H
+NOTE: R7 points to the string to output and the string must be terminated by
+a 00H byte
+
+Chuck
