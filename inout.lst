@@ -1,0 +1,19 @@
+                  		org	0h
+                        	
+   0000   90            init	ghi 0
+   0001   b7            		phi 7
+   0002   f8 0e         setx	ldi data
+   0004   a7            		plo	7
+   0005   e7            		sex 7
+   0006   3f 06         waitin	bn4 waitin
+   0008   6c            		inp 4
+   0009   64            		out 4
+   000a   37 0a         waitof	b4 waitof
+   000c   30 02         		br setx
+                        
+                  data	blk 1
+                        		
+                  		end
+000e  data          0000  init          0002  setx          0006  waitin    
+000a  waitof        
+
