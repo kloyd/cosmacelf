@@ -64,13 +64,16 @@
    0221   85 26         		WORD 8526H
                         
                         
-                        ;OUTSTR	WORD 8526H
                         
    0223   d1            		SEP 1 ; exit to mon.
                         	
-   0224   48 45 4c 4c   STR		TEXT "HELLO"
-   0228   4f            
-   0229   00            		BYTE 0
+   0224   48 65 6c 6c   STR		TEXT "Hello, I'm a TIL."
+   0228   6f 2c 20 49   
+   022c   27 6d 20 61   
+   0230   20 54 49 4c   
+   0234   2e            
+   0235   0d            		BYTE 0dh
+   0236   00            		BYTE 0
                         
                         
                         ;; routine locations
