@@ -23,14 +23,14 @@ R15	EQU	15
 	ORG 200H
 	; Setup for SCRT routines.
 	; Set R3 as program counter
-	LDI HIGH ENTRY
+	LDI HIGH main
 	PHI R3
-	LDI LOW ENTRY
+	LDI LOW main
 	PLO R3
 	SEP R3
 	; Main program entry.	
 	; Setup stack pointer R2 @7FBFh
-ENTRY	LDI 07FH
+main	LDI 07FH
 	PHI R2
 	LDI 0BFH
 	PLO R2
@@ -47,9 +47,9 @@ ENTRY	LDI 07FH
 	PLO	R5
 	
 	; R7 points to string.
-	LDI HIGH TILTEX
+	LDI HIGH greeting
 	PHI R7
-	LDI LOW TILTEX
+	LDI LOW greeting
 	PLO R7
 	; Call SCRT dispatcher (R3 points to 8526H)
 	; How to understand this weirdness.
@@ -63,7 +63,7 @@ ENTRY	LDI 07FH
 	; Exit to Membership Card monitor.
 	SEP 1
 	
-TILTEX	TEXT "Hello, I'm a TIL."
+greeting	TEXT "Hello, I'm a TIL."
 	BYTE 0dh
 	BYTE 0Ah
 	TEXT " $"

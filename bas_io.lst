@@ -1,93 +1,87 @@
-                        		CPU 1802
+                        	CPU 1802
                         
                         ;
                         ; Register Definitions:
                         ;
-                  R0		EQU	0
-                  R1		EQU	1
-                  R2		EQU	2
-                  R3		EQU	3
-                  R4		EQU	4
-                  R5		EQU	5
-                  R6		EQU	6
-                  R7		EQU	7
-                  R8		EQU	8
-                  R9		EQU	9
-                  R10		EQU	10
-                  R11		EQU	11
-                  R12		EQU	12
-                  R13		EQU	13
-                  R14		EQU	14
-                  R15		EQU	15
+   0000                 R0	EQU	0
+   0001                 R1	EQU	1
+   0002                 R2	EQU	2
+   0003                 R3	EQU	3
+   0004                 R4	EQU	4
+   0005                 R5	EQU	5
+   0006                 R6	EQU	6
+   0007                 R7	EQU	7
+   0008                 R8	EQU	8
+   0009                 R9	EQU	9
+   000a                 R10	EQU	10
+   000b                 R11	EQU	11
+   000c                 R12	EQU	12
+   000d                 R13	EQU	13
+   000e                 R14	EQU	14
+   000f                 R15	EQU	15
                         
-                  		ORG 200H
-                        		; Setup for SCRT routines.
-                        		; Set R3 as program counter
-   0200   f8 02         		LDI HIGH ENTRY
-   0202   b3            		PHI R3
-   0203   f8 07         		LDI LOW ENTRY
-   0205   a3            		PLO R3
-   0206   d3            		SEP R3
-                        		; Main program entry.
-                  ENTRY	
-                        		; Setup stack pointer (r2)
-                        		; 7FBF
-   0207   f8 7f         		LDI 07FH
-   0209   b2            		PHI R2
-   020a   f8 bf         		LDI 0BFH
-   020c   a2            		PLO R2
-   020d   e2            		SEX R2
-                        		; Setup 4 to CALL routine 8ADB
-   020e   f8 8a         	    LDI	HIGH CALL
-   0210   b4            	    PHI	R4
-   0211   f8 db         	    LDI	LOW CALL
-   0213   a4            	    PLO	R4
-                        		; Setup R5 to RETURN (8AED)
-   0214   f8 8a         	    LDI	HIGH RETURN
-   0216   b5            	    PHI	R5
-   0217   f8 ed         	    LDI	LOW RETURN
-   0219   a5            	    PLO	R5
-                        		
-                        		; R7 points to string.
-   021a   f8 02         		LDI HIGH STR
-   021c   b7            		PHI R7
-   021d   f8 24         		LDI LOW STR
-   021f   a7            		PLO R7
-                        		; Call SCRT dispatcher (R3 points to 8526H)
-                        		; How to understand this weirdness.
-                        		; R4 points to a Dispatch routine.
-                        		; R3 is the program counter. R3 will be incremented to the address
-                        		; of the data after the SEP R4 instruction and contains the address
-                        		; of the actual routine.
-                        		; ergo it will indirectly jump to 8526H
-   0220   d4            		SEP R4
-   0221   85 26         		WORD 8526H
-                        
-                        
-                        
-   0223   d1            		SEP 1 ; exit to mon.
+   0200                 	ORG 200H
+                        	; Setup for SCRT routines.
+                        	; Set R3 as program counter
+   0200   f8 02         	LDI HIGH main
+   0202   b3            	PHI R3
+   0203   f8 07         	LDI LOW main
+   0205   a3            	PLO R3
+   0206   d3            	SEP R3
+                        	; Main program entry.	
+                        	; Setup stack pointer R2 @7FBFh
+   0207   f8 7f         main	LDI 07FH
+   0209   b2            	PHI R2
+   020a   f8 bf         	LDI 0BFH
+   020c   a2            	PLO R2
+   020d   e2            	SEX R2
+                        	; Setup 4 to CALL routine 8ADB
+   020e   f8 8a         	LDI	HIGH CALL
+   0210   b4            	PHI	R4
+   0211   f8 db         	LDI	LOW CALL
+   0213   a4            	PLO	R4
+                        	; Setup R5 to RETURN (8AED)
+   0214   f8 8a         	LDI	HIGH RETURN
+   0216   b5            	PHI	R5
+   0217   f8 ed         	LDI	LOW RETURN
+   0219   a5            	PLO	R5
                         	
-   0224   48 65 6c 6c   STR		TEXT "Hello, I'm a TIL."
+                        	; R7 points to string.
+   021a   f8 02         	LDI HIGH greeting
+   021c   b7            	PHI R7
+   021d   f8 24         	LDI LOW greeting
+   021f   a7            	PLO R7
+                        	; Call SCRT dispatcher (R3 points to 8526H)
+                        	; How to understand this weirdness.
+                        	; R4 points to a Dispatch routine.
+                        	; R3 is the program counter. R3 will be incremented to the address
+                        	; of the data after the SEP R4 instruction and contains the address
+                        	; of the actual routine.
+                        	; ergo it will indirectly jump to 8526H
+   0220   d4            	SEP R4
+   0221   85 26         	WORD 8526H
+                        	; Exit to Membership Card monitor.
+   0223   d1            	SEP 1
+                        	
+   0224   48 65 6c 6c   greeting	TEXT "Hello, I'm a TIL."
    0228   6f 2c 20 49   
    022c   27 6d 20 61   
    0230   20 54 49 4c   
    0234   2e            
-   0235   0d            		BYTE 0dh
-   0236   0a            		BYTE 0Ah
-   0237   20 24         		TEXT " $"
-                        		
-   0239   00            		BYTE 0
-                        
+   0235   0d            	BYTE 0dh
+   0236   0a            	BYTE 0Ah
+   0237   20 24         	TEXT " $"
+                        	
+   0239   00            	BYTE 0
                         
                         ;; routine locations
-                  CALL	EQU 8ADBH
+   8adb                 CALL	EQU 8ADBH
+   8aed                 RETURN	EQU 8AEDH
                         
-                  RETURN	EQU 8AEDH
-                        
-                  		END
-8adb  CALL          0207  ENTRY         0000  R0            0001  R1        
-000a  R10           000b  R11           000c  R12           000d  R13       
-000e  R14           000f  R15           0002  R2            0003  R3        
-0004  R4            0005  R5            0006  R6            0007  R7        
-0008  R8            0009  R9            8aed  RETURN        0224  STR       
+   023a                 	END
+8adb  CALL          0000  R0            0001  R1            000a  R10       
+000b  R11           000c  R12           000d  R13           000e  R14       
+000f  R15           0002  R2            0003  R3            0004  R4        
+0005  R5            0006  R6            0007  R7            0008  R8        
+0009  R9            8aed  RETURN        0224  greeting      0207  main      
 
