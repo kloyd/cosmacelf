@@ -84,57 +84,59 @@
                         	; CALL pseudo-op of the A18 assembler
                         	; Set program counter to R4 and follow with word address of the routine to be called.
    801a   f8 80 b7 f8   	LOAD TXTPTR, GREET
-   801e   48 a7         
+   801e   4a a7         
    8020   d4 05 26      	CALL OUTSTR
                         
    8023   f8 80 b7 f8   INLINE	LOAD TXTPTR, PROMPT
-   8027   5e a7         
+   8027   60 a7         
    8029   d4 05 26      	CALL OUTSTR
                         	
                         	; Read a char, echo a char
                         	; if ctrl-c stop
    802c   d4 00 05      IOLOOP	CALL INCHR
-   802f   d4 02 1d      	CALL OUTCHR
-   8032   8b            	GLO INDATA     ; io leaves in RB.0
-   8033   fd 03         	SDI 3 ; subtract ctrl-c
-   8035   32 47         	BZ EXIT
+   802f   8b            	GLO INDATA     ; io leaves in RB.0
+   8030   fd 03         	SDI 3 ; subtract ctrl-c
+   8032   32 49         	BZ EXIT
                         	;; simplistic now, must add typed chars to a buffer.
                         	;;
-                        	;;
-   8037   8b            	GLO INDATA
-   8038   fd 0d         	SDI 13 ; CR?
-   803a   39 2c         	BNQ IOLOOP
-   803c   f8 80 b7 f8   	LOAD TXTPTR, OKMSG
-   8040   5a a7         
-   8042   d4 05 26      	CALL OUTSTR
-   8045   30 23         	BR INLINE
+                        	;; CHECK FOR <CR>
+   8034   8b            	GLO INDATA
+   8035   fd 0d         	SDI 13 ; CR?
+   8037   32 3e         	BZ EXECBUF  ; YES - GOTO EXECUTE BUFFER
+   8039   d4 02 1d      	CALL OUTCHR ; ECHO CHARACTER
+   803c   30 2c         	BR IOLOOP
+                        	
+   803e   f8 80 b7 f8   EXECBUF	LOAD TXTPTR, OKMSG
+   8042   5c a7         
+   8044   d4 05 26      	CALL OUTSTR
+   8047   30 23         	BR INLINE
                         	
                         	; Exit to Membership Card monitor.
-   8047   d1            EXIT	SEP 1
+   8049   d1            EXIT	SEP 1
                         	
                         	; Cold start
-   8048   48 65 6c 6c   GREET	TEXT "Hello, I'm a TIL."
-   804c   6f 2c 20 49   
-   8050   27 6d 20 61   
-   8054   20 54 49 4c   
-   8058   2e            
-   8059   00            	BYTE 0
+   804a   48 65 6c 6c   GREET	TEXT "Hello, I'm a TIL."
+   804e   6f 2c 20 49   
+   8052   27 6d 20 61   
+   8056   20 54 49 4c   
+   805a   2e            
+   805b   00            	BYTE 0
                         
-   805a   20 4f 4b      OKMSG	TEXT " OK"
-   805d   00            	BYTE 0
+   805c   20 4f 4b      OKMSG	TEXT " OK"
+   805f   00            	BYTE  0
                         	
-   805e   0d 0a 24 00   PROMPT	BYTE 0DH, 0AH, 24H, 00
+   8060   0d 0a 24 00   PROMPT	BYTE 0DH, 0AH, 24H, 00
                         
                         
-   8062                 	END
-0adb  CALL          0004  CALLR         8047  EXIT          8048  GREET     
-000a  I             0008  INBUF         0005  INCHR         000b  INDATA    
-8023  INLINE        802c  IOLOOP        805a  OKMSG         021d  OUTCHR    
-0526  OUTSTR        0003  PC            805e  PROMPT        0000  R0        
-0001  R1            000a  R10           000b  R11           000c  R12       
-000d  R13           000e  R14           000f  R15           0002  R2        
-0003  R3            0004  R4            0005  R5            0006  R6        
-0007  R7            0008  R8            0009  R9            0005  RETR      
-0aed  RETURN        0002  SP            000c  TPC           0007  TXTPTR    
-ffbf  UserStack     000b  WA            8007  main          
+   8064                 	END
+0adb  CALL          0004  CALLR         803e  EXECBUF       8049  EXIT      
+804a  GREET         000a  I             0008  INBUF         0005  INCHR     
+000b  INDATA        8023  INLINE        802c  IOLOOP        805c  OKMSG     
+021d  OUTCHR        0526  OUTSTR        0003  PC            8060  PROMPT    
+0000  R0            0001  R1            000a  R10           000b  R11       
+000c  R12           000d  R13           000e  R14           000f  R15       
+0002  R2            0003  R3            0004  R4            0005  R5        
+0006  R6            0007  R7            0008  R8            0009  R9        
+0005  RETR          0aed  RETURN        0002  SP            000c  TPC       
+0007  TXTPTR        ffbf  UserStack     000b  WA            8007  main      
 

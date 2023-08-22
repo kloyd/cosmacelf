@@ -92,17 +92,19 @@ INLINE	LOAD TXTPTR, PROMPT
 	; Read a char, echo a char
 	; if ctrl-c stop
 IOLOOP	CALL INCHR
-	CALL OUTCHR
 	GLO INDATA     ; io leaves in RB.0
 	SDI 3 ; subtract ctrl-c
 	BZ EXIT
 	;; simplistic now, must add typed chars to a buffer.
 	;;
-	;;
+	;; CHECK FOR <CR>
 	GLO INDATA
 	SDI 13 ; CR?
-	BNQ IOLOOP
-	LOAD TXTPTR, OKMSG
+	BZ EXECBUF  ; YES - GOTO EXECUTE BUFFER
+	CALL OUTCHR ; ECHO CHARACTER
+	BR IOLOOP
+	
+EXECBUF	LOAD TXTPTR, OKMSG
 	CALL OUTSTR
 	BR INLINE
 	
@@ -114,7 +116,7 @@ GREET	TEXT "Hello, I'm a TIL."
 	BYTE 0
 
 OKMSG	TEXT " OK"
-	BYTE 0
+	BYTE  0
 	
 PROMPT	BYTE 0DH, 0AH, 24H, 00
 
