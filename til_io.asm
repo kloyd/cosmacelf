@@ -1,31 +1,16 @@
-	CPU 1802
-
+;;;;;;;;;;;;;;
 ;
-; Register Definitions:
+;   Core of Threaded Interpretive Language I/O
 ;
-R0	EQU	0
-R1	EQU	1
-R2	EQU	2
-R3	EQU	3
-R4	EQU	4
-R5	EQU	5
-R6	EQU	6
-R7	EQU	7
-R8	EQU	8
-R9	EQU	9
-R10	EQU	10
-R11	EQU	11
-R12	EQU	12
-R13	EQU	13
-R14	EQU	14
-R15	EQU	15
+;;;;;;;;;;;;;;;;;
 
-;; named registers
-SP	EQU	2
-PC	EQU	3
-CALLR	EQU	4
-RETR	EQU	5
-TXTPTR	EQU	7
+
+; named registers
+SP	EQU	2	; stack pointer
+PC	EQU	3	; program counter
+CALLR	EQU	4	; call register
+RETR	EQU	5	; return register
+TXTPTR	EQU	7	; text pointer
 INBUF	EQU	8	; Input line buffer pointer register.
 ; TIL registers
 I	EQU	10
@@ -36,12 +21,10 @@ TPC	EQU	12
 ;; Stack for ram High - top of ram, minus monitor scratch pad area.
 UserStack EQU 0FFBFH
 ;; SCRT routine locations Standard ROM org'd at 0
-; 
 CALL	EQU 0ADBH
 RETURN	EQU 0AEDH
 ; I/O ROUTINES
 OUTSTR	EQU 0526H
-
 ;The Monitor "INPUT" routine is at 8005hex in the ORG'ed 8000hex Monitor
 ;The inputted character is returned in RB.0
 INDATA	EQU 11
@@ -50,32 +33,20 @@ INCHR	EQU 0005H
 ;;The character to be outputted is stored in RB.0
 OUTCHR	EQU 021DH
 
+; Start at 8000h for ROM @ 0000h
 	ORG 8000H
 	; Setup for SCRT routines.
 	; Set R3 as program counter
-	LDI HIGH main
-	PHI PC
-	LDI LOW main
-	PLO PC
+	LOAD PC, main
 	SEP PC
 	; Main program entry.	
-	; Setup stack pointer R2 @7FBFh
-main	LDI HIGH UserStack
-	PHI R2
-	LDI LOW UserStack
-	PLO R2
-	SEX R2
+	; Setup stack pointer
+main	LOAD SP, UserStack
+	SEX SP
 	; Setup 4 to CALL routine 8ADB
-	LDI	HIGH CALL
-	PHI	R4
-	LDI	LOW CALL
-	PLO	R4
+	LOAD CALLR, CALL
 	; Setup R5 to RETURN (8AED)
-	LDI	HIGH RETURN
-	PHI	R5
-	LDI	LOW RETURN
-	PLO	R5
-	
+	LOAD RETR, RETURN
 	; R7 points to string.
 	; Use SCRT 
 	; R3 is the PC
