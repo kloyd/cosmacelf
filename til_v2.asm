@@ -25,29 +25,49 @@ SP	EQU	0DH
 PC	EQU	0FH
 
 ; Set at 0x8000 - RAM starts here on MC with ROM at 0x0000
-	ORG	8000H	
+	ORG	$8000	
 
 ;
 ; TIL code for Inner Interpreter
-
+; All the VM code (Pseudo-Code) is commented with ;
+; the addresses are based on ORG $100
 ;0100	SEMI	0102
-SEMI	DW	$+2
+SEMI	DW	$+2	; This funny notation means put the address of SEMI+2 into the code here.
+			; It forms the Link Address used to connect dictonary entries.
 ;0102		POP RS -> I
 ; POP : M(RS) copied to I register, RS=RS+2
 ; *IMPORTANT* Endian-ness.. Push to stack pushes low order, dec sp, pushes high order, dec sp
 ; Pop from stack pops high order, inc sp, pop low order, inc sp
-		LDN RS  ; take byte at M(RS), copy to D (accumulator)
-		PHI I   ; put D into I High 
-		INC RS	; RS++
-		LDN RS	; take byte at M(RS), copy to D
-		PLO I	; put D into I Low.
-		INC RS  ; RS++
+	LDN RS  ; take byte at M(RS), copy to D (accumulator)
+	PHI I   ; put D into I High 
+	INC RS	; RS++
+	LDN RS	; take byte at M(RS), copy to D
+	PLO I	; put D into I Low.
+	INC RS  ; RS++
+
 ;0104	NEXT	@I -> WA
-;0106		I = I + 2
+; M(I) -> WA.H, I++, M(I) -> WA.L, I++
+NEXT	LDN I
+	PHI WA
+	INC I
+	LDN I
+	PLO WA
+	INC I
+;0106		I = I + 2 ;; implied during the fetch.
 ;0108	RUN	@WA -> CA
+RUN	LDN WA
+	PHI CA
+	INC WA
+	LDN WA
+	PLO CA
+	INC WA
 ;010A		WA = WA + 2
 ;010C		CA -> PC
-
+	GHI CA
+	PHI PC
+	GLO CA
+	PLO PC
+	
 ;0140	COLON	PSH I -> RS
 ;0142		WA -> I
 ;0144		JMP NEXT
