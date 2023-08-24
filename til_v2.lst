@@ -67,10 +67,22 @@
    8015   BF            	PHI PC
    8016   8A            	GLO CA
    8017   AF            	PLO PC
-                        	
+                        ; setting the program counter should cause a jump - returning should probably be RS?
+   8018   DF            	SEP PC
                         ;0140	COLON	PSH I -> RS
+   8019   2C            	DEC RS
+   801A   88            	GLO I
+   801B   5C            	STR RS
+   801C   2C            	DEC RS
+   801D   98            	GHI I
+   801E   5C            	STR RS
                         ;0142		WA -> I
+   801F   89            	GLO WA
+   8020   A8            	PLO I
+   8021   99            	GHI WA
+   8022   B8            	PHI I
                         ;0144		JMP NEXT
+   8023   30 08         	BR NEXT
                         ;0146
                         
                         ;0050		7E
@@ -85,7 +97,7 @@
                         
                         
                         
-   8018                 		END
+   8025                 		END
 000a  CA            0008  I             8008  NEXT          000f  PC        
 000c  RS            800e  RUN           8000  SEMI          000d  SP        
 0009  WA            

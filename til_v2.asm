@@ -67,10 +67,22 @@ RUN	LDN WA
 	PHI PC
 	GLO CA
 	PLO PC
-	
+; setting the program counter should cause a jump - returning should probably be RS?
+	SEP PC
 ;0140	COLON	PSH I -> RS
+	DEC RS
+	GLO I
+	STR RS
+	DEC RS
+	GHI I
+	STR RS
 ;0142		WA -> I
+	GLO WA
+	PLO I
+	GHI WA
+	PHI I
 ;0144		JMP NEXT
+	BR NEXT
 ;0146
 
 ;0050		7E
