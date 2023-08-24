@@ -17,12 +17,13 @@
 ; 1802 register map
 ; Monitor uses R1, R2, R3, R4, R5, R7, RE
 
-I	EQU	08H
-WA	EQU	09H
-CA	EQU	0AH
-RS	EQU	0CH
-SP	EQU	0DH
-PC	EQU	0FH
+I	EQU	$08
+WA	EQU	$09
+CA	EQU	$0A
+RS	EQU	$0C
+SP	EQU	$0D
+PC	EQU	$0F
+NXT	EQU	$06	; Location of NEXT routine.
 
 ; Set at 0x8000 - RAM starts here on MC with ROM at 0x0000
 	ORG	$8000	
@@ -31,10 +32,13 @@ PC	EQU	0FH
 ; TIL code for Inner Interpreter
 ; All the VM code (Pseudo-Code) is commented with ;
 ; the addresses are based on ORG $100
-;0100	SEMI	0102
+; Save the location of NEXT into NXT register
+	LOAD NXT, NEXT
+;
+;SEMI	LA	;Link Address
 SEMI	DW	$+2	; This funny notation means put the address of SEMI+2 into the code here.
 			; It forms the Link Address used to connect dictonary entries.
-;0102		POP RS -> I
+;POP RS -> I
 ; POP : M(RS) copied to I register, RS=RS+2
 ; *IMPORTANT* Endian-ness.. Push to stack pushes low order, dec sp, pushes high order, dec sp
 ; Pop from stack pops high order, inc sp, pop low order, inc sp
@@ -45,7 +49,7 @@ SEMI	DW	$+2	; This funny notation means put the address of SEMI+2 into the code 
 	PLO I	; put D into I Low.
 	INC RS  ; RS++
 
-;0104	NEXT	@I -> WA
+;NEXT	@I -> WA
 ; M(I) -> WA.H, I++, M(I) -> WA.L, I++
 NEXT	LDN I
 	PHI WA
@@ -53,51 +57,59 @@ NEXT	LDN I
 	LDN I
 	PLO WA
 	INC I
-;0106		I = I + 2 ;; implied during the fetch.
-;0108	RUN	@WA -> CA
+;	I = I + 2 ;; implied during the fetch.
+;RUN	@WA -> CA
 RUN	LDN WA
 	PHI CA
 	INC WA
 	LDN WA
 	PLO CA
 	INC WA
-;010A		WA = WA + 2
-;010C		CA -> PC
+;	WA = WA + 2
+;	CA -> PC
 	GHI CA
 	PHI PC
 	GLO CA
 	PLO PC
 ; setting the program counter should cause a jump - returning should probably be RS?
 	SEP PC
-;0140	COLON	PSH I -> RS
+;COLON	PSH I -> RS
 	DEC RS
 	GLO I
 	STR RS
 	DEC RS
 	GHI I
 	STR RS
-;0142		WA -> I
+;	WA -> I
 	GLO WA
 	PLO I
 	GHI WA
 	PHI I
-;0144		JMP NEXT
+;	JMP NEXT ; should be in a register for SEP instruction.
 	BR NEXT
-;0146
 
-;0050		7E
-;0052		XE
-;0054		LA  ; Link Address to Next dictionary entry.
-;0056	EXECUTE	0058
-;0058		POP SP -> WA
-;005A		JMP
-;005C		0108
+;	7E
+;	XE
+;	LA  ; Link Address to Next dictionary entry.
+;	EXECUTE	LA
+;	Dictionary Entry.
+	DB 7,'E','X','E'
+	DW 0
+EXECUTE	DW $+2
+;	POP SP -> WA
+; Pop from stack pops high order, inc sp, pop low order, inc sp
+	LDN SP  ; take byte at M(RS), copy to D (accumulator)
+	PHI WA   ; put D into I High 
+	INC SP	; RS++
+	LDN SP	; take byte at M(RS), copy to D
+	PLO WA	; put D into I Low.
+	INC SP  ; RS++
+;	JMP RUN
+	BR RUN
 
 
 
-
-
-		END
+	END
 		
 		
 		
