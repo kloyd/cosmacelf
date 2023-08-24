@@ -36,12 +36,12 @@ SEMI	DW	$+2
 ; POP : M(RS) copied to I register, RS=RS+2
 ; *IMPORTANT* Endian-ness.. Push to stack pushes low order, dec sp, pushes high order, dec sp
 ; Pop from stack pops high order, inc sp, pop low order, inc sp
-		LDN RS
-		PLO I
-		INC RS
-		LDN RS
-		PHI I
-		INC RS
+		LDN RS  ; take byte at M(RS), copy to D (accumulator)
+		PHI I   ; put D into I High 
+		INC RS	; RS++
+		LDN RS	; take byte at M(RS), copy to D
+		PLO I	; put D into I Low.
+		INC RS  ; RS++
 ;0104	NEXT	@I -> WA
 ;0106		I = I + 2
 ;0108	RUN	@WA -> CA

@@ -36,12 +36,12 @@
                         ; POP : M(RS) copied to I register, RS=RS+2
                         ; *IMPORTANT* Endian-ness.. Push to stack pushes low order, dec sp, pushes high order, dec sp
                         ; Pop from stack pops high order, inc sp, pop low order, inc sp
-   8002   0C            		LDN RS
-   8003   A8            		PLO I
-   8004   1C            		INC RS
-   8005   0C            		LDN RS
-   8006   B8            		PHI I
-   8007   1C            		INC RS
+   8002   0C            		LDN RS  ; take byte at M(RS), copy to D (accumulator)
+   8003   B8            		PHI I   ; put D into I High 
+   8004   1C            		INC RS	; RS++
+   8005   0C            		LDN RS	; take byte at M(RS), copy to D
+   8006   A8            		PLO I	; put D into I Low.
+   8007   1C            		INC RS  ; RS++
                         ;0104	NEXT	@I -> WA
                         ;0106		I = I + 2
                         ;0108	RUN	@WA -> CA
