@@ -49,9 +49,9 @@
    800B   0C            	LDN RS	; take byte at M(RS), copy to D
    800C   A8            	PLO I	; put D into I Low.
    800D   1C            	INC RS  ; RS++
-                        
-                        ;NEXT	@I -> WA
-                        ; M(I) -> WA.H, I++, M(I) -> WA.L, I++
+                        	
+                        ; NEXT entry point - fetch the NEXT word address and execute it.
+                        ;NEXT	@I -> WA   ; M(I) -> WA.H, I++, M(I) -> WA.L, I++
    800E   08            NEXT	LDN I
    800F   B9            	PHI WA
    8010   18            	INC I
@@ -66,13 +66,16 @@
    8017   09            	LDN WA
    8018   AA            	PLO CA
    8019   19            	INC WA
-                        ;	WA = WA + 2
+                        ;	WA = WA + 2 (Implied with 2x INC WA above)
                         ;	CA -> PC
    801A   9A            	GHI CA
    801B   BF            	PHI PC
    801C   8A            	GLO CA
    801D   AF            	PLO PC
-                        ; setting the program counter should cause a jump - returning should probably be RS?
+                        	; setting the program counter will jump to the primitive.
+                        	; When the routine completes, it should SEP NXT
+                        	; Causing the called routine to return to the NEXT
+                        	; Entry Point
    801E   DF            	SEP PC
                         ;COLON	PSH I -> RS
    801F   2C            	DEC RS

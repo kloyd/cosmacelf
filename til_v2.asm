@@ -48,9 +48,9 @@ SEMI	DW	$+2	; This funny notation means put the address of SEMI+2 into the code 
 	LDN RS	; take byte at M(RS), copy to D
 	PLO I	; put D into I Low.
 	INC RS  ; RS++
-
-;NEXT	@I -> WA
-; M(I) -> WA.H, I++, M(I) -> WA.L, I++
+	
+; NEXT entry point - fetch the NEXT word address and execute it.
+;NEXT	@I -> WA   ; M(I) -> WA.H, I++, M(I) -> WA.L, I++
 NEXT	LDN I
 	PHI WA
 	INC I
@@ -65,13 +65,16 @@ RUN	LDN WA
 	LDN WA
 	PLO CA
 	INC WA
-;	WA = WA + 2
+;	WA = WA + 2 (Implied with 2x INC WA above)
 ;	CA -> PC
 	GHI CA
 	PHI PC
 	GLO CA
 	PLO PC
-; setting the program counter should cause a jump - returning should probably be RS?
+	; setting the program counter will jump to the primitive.
+	; When the routine completes, it should SEP NXT
+	; Causing the called routine to return to the NEXT
+	; Entry Point
 	SEP PC
 ;COLON	PSH I -> RS
 	DEC RS
