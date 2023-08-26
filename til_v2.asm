@@ -16,7 +16,11 @@
 
 ; 1802 register map
 ; Monitor uses R1, R2, R3, R4, R5, R7, RE
-
+SCRTPC	EQU	$03
+CALLR	EQU	$04
+RETR	EQU	$05
+TXTPTR	EQU	$07
+; P-REGISTERS
 I	EQU	$08
 WA	EQU	$09
 CA	EQU	$0A
@@ -28,6 +32,15 @@ NXT	EQU	$06	; Location of NEXT routine.
 ; Set at 0x8000 - RAM starts here on MC with ROM at 0x0000
 	ORG	$8000	
 
+; variables
+BASE	DB	0
+MODE	DB	0
+LBEND	DW	0
+
+; Setup for SCRT
+
+; START/RESTART
+START	
 ;
 ; TIL code for Inner Interpreter
 ; All the VM code (Pseudo-Code) is commented with ;
@@ -77,7 +90,7 @@ RUN	LDN WA
 	; Entry Point
 	SEP PC
 ;COLON	PSH I -> RS
-	DEC RS
+COLON	DEC RS
 	GLO I
 	STR RS
 	DEC RS
@@ -111,7 +124,13 @@ EXECUTE	DW $+2
 	BR RUN
 
 
+	; Cold start
+RSTMSG	TEXT "Hello, I'm a TIL."
+	BYTE 0
 
+SRTMSG	TEXT "TIL Reset"
+	BYTE 0
+	
 	END
 		
 		

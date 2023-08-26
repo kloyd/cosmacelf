@@ -16,7 +16,11 @@
                         
                         ; 1802 register map
                         ; Monitor uses R1, R2, R3, R4, R5, R7, RE
-                        
+   0003                 SCRTPC	EQU	$03
+   0004                 CALLR	EQU	$04
+   0005                 RETR	EQU	$05
+   0007                 TXTPTR	EQU	$07
+                        ; P-REGISTERS
    0008                 I	EQU	$08
    0009                 WA	EQU	$09
    000A                 CA	EQU	$0A
@@ -28,93 +32,117 @@
                         ; Set at 0x8000 - RAM starts here on MC with ROM at 0x0000
    8000                 	ORG	$8000	
                         
+                        ; variables
+   8000   00            BASE	DB	0
+   8001   00            MODE	DB	0
+   8002   00 00         LBEND	DW	0
+                        
+                        ; Setup for SCRT
+                        
+                        ; START/RESTART
+   8004                 START	
                         ;
                         ; TIL code for Inner Interpreter
                         ; All the VM code (Pseudo-Code) is commented with ;
                         ; the addresses are based on ORG $100
                         ; Save the location of NEXT into NXT register
-   8000   F8 80 B6 F8   	LOAD NXT, NEXT
-   8004   0E A6         
+   8004   F8 80 B6 F8   	LOAD NXT, NEXT
+   8008   12 A6         
                         ;
                         ;SEMI	LA	;Link Address
-   8006   80 08         SEMI	DW	$+2	; This funny notation means put the address of SEMI+2 into the code here.
+   800A   80 0C         SEMI	DW	$+2	; This funny notation means put the address of SEMI+2 into the code here.
                         			; It forms the Link Address used to connect dictonary entries.
                         ;POP RS -> I
                         ; POP : M(RS) copied to I register, RS=RS+2
                         ; *IMPORTANT* Endian-ness.. Push to stack pushes low order, dec sp, pushes high order, dec sp
                         ; Pop from stack pops high order, inc sp, pop low order, inc sp
-   8008   0C            	LDN RS  ; take byte at M(RS), copy to D (accumulator)
-   8009   B8            	PHI I   ; put D into I High 
-   800A   1C            	INC RS	; RS++
-   800B   0C            	LDN RS	; take byte at M(RS), copy to D
-   800C   A8            	PLO I	; put D into I Low.
-   800D   1C            	INC RS  ; RS++
+   800C   0C            	LDN RS  ; take byte at M(RS), copy to D (accumulator)
+   800D   B8            	PHI I   ; put D into I High 
+   800E   1C            	INC RS	; RS++
+   800F   0C            	LDN RS	; take byte at M(RS), copy to D
+   8010   A8            	PLO I	; put D into I Low.
+   8011   1C            	INC RS  ; RS++
                         	
                         ; NEXT entry point - fetch the NEXT word address and execute it.
                         ;NEXT	@I -> WA   ; M(I) -> WA.H, I++, M(I) -> WA.L, I++
-   800E   08            NEXT	LDN I
-   800F   B9            	PHI WA
-   8010   18            	INC I
-   8011   08            	LDN I
-   8012   A9            	PLO WA
-   8013   18            	INC I
+   8012   08            NEXT	LDN I
+   8013   B9            	PHI WA
+   8014   18            	INC I
+   8015   08            	LDN I
+   8016   A9            	PLO WA
+   8017   18            	INC I
                         ;	I = I + 2 ;; implied during the fetch.
                         ;RUN	@WA -> CA
-   8014   09            RUN	LDN WA
-   8015   BA            	PHI CA
-   8016   19            	INC WA
-   8017   09            	LDN WA
-   8018   AA            	PLO CA
-   8019   19            	INC WA
+   8018   09            RUN	LDN WA
+   8019   BA            	PHI CA
+   801A   19            	INC WA
+   801B   09            	LDN WA
+   801C   AA            	PLO CA
+   801D   19            	INC WA
                         ;	WA = WA + 2 (Implied with 2x INC WA above)
                         ;	CA -> PC
-   801A   9A            	GHI CA
-   801B   BF            	PHI PC
-   801C   8A            	GLO CA
-   801D   AF            	PLO PC
+   801E   9A            	GHI CA
+   801F   BF            	PHI PC
+   8020   8A            	GLO CA
+   8021   AF            	PLO PC
                         	; setting the program counter will jump to the primitive.
                         	; When the routine completes, it should SEP NXT
                         	; Causing the called routine to return to the NEXT
                         	; Entry Point
-   801E   DF            	SEP PC
+   8022   DF            	SEP PC
                         ;COLON	PSH I -> RS
-   801F   2C            	DEC RS
-   8020   88            	GLO I
-   8021   5C            	STR RS
-   8022   2C            	DEC RS
-   8023   98            	GHI I
-   8024   5C            	STR RS
+   8023   2C            COLON	DEC RS
+   8024   88            	GLO I
+   8025   5C            	STR RS
+   8026   2C            	DEC RS
+   8027   98            	GHI I
+   8028   5C            	STR RS
                         ;	WA -> I
-   8025   89            	GLO WA
-   8026   A8            	PLO I
-   8027   99            	GHI WA
-   8028   B8            	PHI I
+   8029   89            	GLO WA
+   802A   A8            	PLO I
+   802B   99            	GHI WA
+   802C   B8            	PHI I
                         ;	JMP NEXT ; should be in a register for SEP instruction.
-   8029   30 0E         	BR NEXT
+   802D   30 12         	BR NEXT
                         
                         ;	7E
                         ;	XE
                         ;	LA  ; Link Address to Next dictionary entry.
                         ;	EXECUTE	LA
                         ;	Dictionary Entry.
-   802B   07 45 58 45   	DB 7,'E','X','E'
-   802F   00 00         	DW 0
-   8031   80 33         EXECUTE	DW $+2
+   802F   07 45 58 45   	DB 7,'E','X','E'
+   8033   00 00         	DW 0
+   8035   80 37         EXECUTE	DW $+2
                         ;	POP SP -> WA
                         ; Pop from stack pops high order, inc sp, pop low order, inc sp
-   8033   0D            	LDN SP  ; take byte at M(RS), copy to D (accumulator)
-   8034   B9            	PHI WA   ; put D into I High 
-   8035   1D            	INC SP	; RS++
-   8036   0D            	LDN SP	; take byte at M(RS), copy to D
-   8037   A9            	PLO WA	; put D into I Low.
-   8038   1D            	INC SP  ; RS++
+   8037   0D            	LDN SP  ; take byte at M(RS), copy to D (accumulator)
+   8038   B9            	PHI WA   ; put D into I High 
+   8039   1D            	INC SP	; RS++
+   803A   0D            	LDN SP	; take byte at M(RS), copy to D
+   803B   A9            	PLO WA	; put D into I Low.
+   803C   1D            	INC SP  ; RS++
                         ;	JMP RUN
-   8039   30 14         	BR RUN
+   803D   30 18         	BR RUN
                         
                         
+                        	; Cold start
+   803F   48 65 6C 6C   RSTMSG	TEXT "Hello, I'm a TIL."
+   8043   6F 2C 20 49   
+   8047   27 6D 20 61   
+   804B   20 54 49 4C   
+   804F   2E            
+   8050   00            	BYTE 0
                         
-   803B                 	END
-000a  CA            8031  EXECUTE       0008  I             800e  NEXT      
-0006  NXT           000f  PC            000c  RS            8014  RUN       
-8006  SEMI          000d  SP            0009  WA            
+   8051   54 49 4C 20   SRTMSG	TEXT "TIL Reset"
+   8055   52 65 73 65   
+   8059   74            
+   805A   00            	BYTE 0
+                        	
+   805B                 	END
+8000  BASE          000a  CA            0004  CALLR         8023  COLON     
+8035  EXECUTE       0008  I             8002  LBEND         8001  MODE      
+8012  NEXT          0006  NXT           000f  PC            0005  RETR      
+000c  RS            803f  RSTMSG        8018  RUN           0003  SCRTPC    
+800a  SEMI          000d  SP            8051  SRTMSG        8004  START     
+0007  TXTPTR        0009  WA            
 

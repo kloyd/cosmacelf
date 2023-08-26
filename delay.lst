@@ -1,0 +1,17 @@
+                        
+   0002                 R2	EQU	2
+                        
+   0000                 	ORG	$0
+   0000   F8 A2         RUN	LDI	$A2 ; 162 DECIMAL
+   0002   B2            	PHI	R2
+   0003   22            DECR	DEC	R2
+   0004   3A 03         	BNZ	DECR
+   0006   CD            	LSQ
+   0007   7B            	SEQ
+   0008   38            	SKP
+   0009   7A            	REQ
+   000A   30 00         	BR	RUN
+                        	
+   000C                 	END
+0003  DECR          0002  R2            0000  RUN           
+
