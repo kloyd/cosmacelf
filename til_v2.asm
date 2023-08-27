@@ -19,7 +19,8 @@
 SCRTPC	EQU	$03
 CALLR	EQU	$04
 RETR	EQU	$05
-TXTPTR	EQU	$07
+TXTOUT	EQU	$07
+
 ; P-REGISTERS
 I	EQU	$08
 WA	EQU	$09
@@ -37,10 +38,30 @@ BASE	DB	0
 MODE	DB	0
 LBEND	DW	0
 
-; Setup for SCRT
+UserStack EQU 0FFBFH
+;; SCRT routine locations Standard ROM org'd at 0
+CALL	EQU 0ADBH
+RETURN	EQU 0AEDH
+; I/O ROUTINES
+OUTSTR	EQU 0526H
+;The Monitor "INPUT" routine is at 8005hex in the ORG'ed 8000hex Monitor
+;The inputted character is returned in RB.0
+INDATA	EQU 11
+INCHR	EQU 0005H
+;;The Monitor "OUTPUT" routine is at 821Dhex in the ORG'ed 8000hex Monitor
+;;The character to be outputted is stored in RB.0
+OUTCHR	EQU 021DH
 
+
+; Setup for SCRT
+	LOAD	SCRTPC, START
+	SEP SCRTPC
+	
 ; START/RESTART
-START	
+START	LOAD CALLR, CALL
+	LOAD RETR, RETURN
+	
+	LOAD TXTOUT, STRMSG
 ;
 ; TIL code for Inner Interpreter
 ; All the VM code (Pseudo-Code) is commented with ;
@@ -125,10 +146,10 @@ EXECUTE	DW $+2
 
 
 	; Cold start
-RSTMSG	TEXT "Hello, I'm a TIL."
+STRMSG	TEXT "Hello, I'm a TIL."
 	BYTE 0
 
-SRTMSG	TEXT "TIL Reset"
+RSTMSG	TEXT "TIL Reset"
 	BYTE 0
 	
 	END
