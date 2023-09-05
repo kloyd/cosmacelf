@@ -20,6 +20,7 @@ SCRTPC	EQU	$03
 CALLR	EQU	$04
 RETR	EQU	$05
 TXTOUT	EQU	$07
+VAR	EQU	$07	; dual use, variable pointer or text message pointer.
 
 ; P-REGISTERS
 I	EQU	$08
@@ -62,6 +63,14 @@ START	LOAD CALLR, CALL
 	LOAD RETR, RETURN
 	
 	LOAD TXTOUT, STRMSG
+	LOAD VAR, BASE
+	LDN VAR
+	ANI	$FF
+	BZ	ABORT
+	LDI	10
+	STR VAR
+ABORT	; set stack
+
 ;
 ; TIL code for Inner Interpreter
 ; All the VM code (Pseudo-Code) is commented with ;
