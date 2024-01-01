@@ -69,7 +69,8 @@ START	LOAD CALLR, CALL
 	BZ	ABORT
 	LDI	10
 	STR VAR
-ABORT	; set stack
+ABORT	LOAD SP, UserStack
+	SEX SP
 
 ;
 ; TIL code for Inner Interpreter
