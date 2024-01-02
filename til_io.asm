@@ -7,47 +7,46 @@
 ;******************************************************************
 
 
-; Register definitions (1802 has R0-RF 16 x 16 bit registers)
-SP	EQU	2	; stack pointer
+; 	Register definitions (1802 has R0-RF 16 x 16 bit registers)
+STACK	EQU	2	; stack pointer
 PC	EQU	3	; program counter
 CALLR	EQU	4	; call register
 RETR	EQU	5	; return register
 TXTPTR	EQU	7	; text pointer
 INBUF	EQU	8	; Input line buffer pointer register.
-; TIL registers
-I	EQU	10
-WA	EQU	11
-TPC	EQU	12
+; 	TIL registers
+I	EQU	10	; Instruction Pointer
+WA	EQU	11	; Word Address
+TPC	EQU	12	; TIL Program Counter
 
 
-;; Stack for ram High - top of ram, minus monitor scratch pad area.
+;	Stack for ram High - top of ram, minus monitor scratch pad area.
 USTACK	EQU 0FFBFH
-;; SCRT routine locations Standard ROM org'd at 0
-CALL	EQU 0ADBH
+;	SCRT routine locations Standard ROM org'd at 0
+CALLSC	EQU 0ADBH
 RETURN	EQU 0AEDH
-; I/O ROUTINES
+; 	I/O ROUTINES
 OUTSTR	EQU 0526H
-;The Monitor "INPUT" routine is at 8005hex in the ORG'ed 8000hex Monitor
-;The inputted character is returned in RB.0
+;	The Monitor "INPUT" routine is at 8005hex in the ORG'ed 8000hex Monitor
+;	The inputted character is returned in RB.0
 INDATA	EQU 11
 INCHR	EQU 0005H
-;;The Monitor "OUTPUT" routine is at 821Dhex in the ORG'ed 8000hex Monitor
-;;The character to be outputted is stored in RB.0
+;	The Monitor "OUTPUT" routine is at 821Dhex in the ORG'ed 8000hex Monitor
+;	The character to be outputted is stored in RB.0
 OUTCHR	EQU 021DH
 
-; Start at 8000h for ROM @ 0000h
+;	Start at 8000h for ROM @ 0000h
 	ORG 8000H
-; Setup for SCRT routines.
-; Set R3 as program counter
-	LOAD PC, main
+;	Setup for SCRT routines.
+; 	Set R3 as program counter
+	LOAD PC, MAIN
 	SEP PC
-; Main program entry.	
-; Setup stack pointer
-main	LOAD SP, USTACK
-	SEX SP
-; Setup 4 to CALL routine 8ADB
-	LOAD CALLR, CALL
-; Setup R5 to RETURN (8AED)
+;	*** Main program entry.	
+MAIN	LOAD STACK, USTACK	; Setup stack pointer
+	SEX STACK
+; 	Setup 4 to CALLSC routine 8ADB
+	LOAD CALLR, CALLSC
+; 	Setup R5 to RETURN (8AED)
 	LOAD RETR, RETURN
 ; R7 points to string.
 ; Use SCRT 
