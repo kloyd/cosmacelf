@@ -1,22 +1,0 @@
-                        ; Tape reader program sample assembly code.
-                        ; Input switch on EF4
-                        ; Tape sensor on EF1
-                            CPU 1802
-                      ORG 00H
-   0000   90                GHI 0H  ; Set F = 0010h
-   0001   bf                PHI 0fH
-   0002   f8 0a             LDI 10
-   0004   af                PLO 0FH
-   0005   3f 10             BN4 PGM ; Goto program if Input not pressed.
-   0007   3e 07         TAPEWAIT  BN3 TAPEWAIT ; Tape ~RDY tied to CPU ~EF3
-   0009   ef                SEX 0FH ; set Index to F
-   000a   6b                INP 3   ; Input from port 3 to @F.
-   000b   64                OUT 4
-   000c   7b                SEQ
-   000d   7a                REQ
-   000e   30 07             BR TAPEWAIT
-   0010   00            PGM BYTE 0
-
-                    END
-0010  PGM           0007  TAPEWAIT
-
