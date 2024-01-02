@@ -1,11 +1,13 @@
-;;;;;;;;;;;;;;
+;******************************************************************
+;	Threaded Interpretive Language (TIL) for COSMAC 1802 CPU.
+;	Core of Threaded Interpretive Language I/O
 ;
-;   Core of Threaded Interpretive Language I/O
+;	From the book "Threaded Interpretive Languages: Their Design and Implementation"
 ;
-;;;;;;;;;;;;;;;;;
+;******************************************************************
 
 
-; named registers
+; Register definitions (1802 has R0-RF 16 x 16 bit registers)
 SP	EQU	2	; stack pointer
 PC	EQU	3	; program counter
 CALLR	EQU	4	; call register
@@ -19,7 +21,7 @@ TPC	EQU	12
 
 
 ;; Stack for ram High - top of ram, minus monitor scratch pad area.
-UserStack EQU 0FFBFH
+USTACK	EQU 0FFBFH
 ;; SCRT routine locations Standard ROM org'd at 0
 CALL	EQU 0ADBH
 RETURN	EQU 0AEDH
@@ -35,25 +37,25 @@ OUTCHR	EQU 021DH
 
 ; Start at 8000h for ROM @ 0000h
 	ORG 8000H
-	; Setup for SCRT routines.
-	; Set R3 as program counter
+; Setup for SCRT routines.
+; Set R3 as program counter
 	LOAD PC, main
 	SEP PC
-	; Main program entry.	
-	; Setup stack pointer
-main	LOAD SP, UserStack
+; Main program entry.	
+; Setup stack pointer
+main	LOAD SP, USTACK
 	SEX SP
-	; Setup 4 to CALL routine 8ADB
+; Setup 4 to CALL routine 8ADB
 	LOAD CALLR, CALL
-	; Setup R5 to RETURN (8AED)
+; Setup R5 to RETURN (8AED)
 	LOAD RETR, RETURN
-	; R7 points to string.
-	; Use SCRT 
-	; R3 is the PC
-	; R4 is the call register - points to the call routine in rom
-	; R5 is the return register - points to return routine in rom
-	; CALL pseudo-op of the A18 assembler
-	; Set program counter to R4 and follow with word address of the routine to be called.
+; R7 points to string.
+; Use SCRT 
+; R3 is the PC
+; R4 is the call register - points to the call routine in rom
+; R5 is the return register - points to return routine in rom
+; CALL pseudo-op of the A18 assembler
+; Set program counter to R4 and follow with word address of the routine to be called.
 	LOAD TXTPTR, GREET
 	CALL OUTSTR
 
