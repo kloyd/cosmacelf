@@ -1,11 +1,0 @@
-                        ; Turn on Q when IN pushed
-                  	ORG 0000h
-                        
-   0000   7a            START	REQ	; Q -> off
-   0001   3f 00         CHKIN	BN4 START ; goto start while IN not pressed.
-   0003   7b            	SEQ	; Q -> On
-   0004   30 01         	BR CHKIN ; back to not pressed
-                        	
-                  	END
-0001  CHKIN         0000  START         
-

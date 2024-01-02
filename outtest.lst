@@ -1,14 +1,0 @@
-                        ; Test 1802 OUT instruction
-                  		ORG 0h
-                        		
-   0000   64            START		OUT 4
-   0001   00            DATA1		BYTE 00
-   0002   3f 00         INPTEST		BN4 START
-                        		
-   0004   64            		OUT 4
-   0005   11            DATA2		BYTE 011h
-   0006   30 02         		BR INPTEST
-                        		
-                  		END
-0001  DATA1         0005  DATA2         0002  INPTEST       0000  START     
-
